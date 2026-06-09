@@ -10,6 +10,8 @@ import (
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 var DB *gorm.DB
@@ -56,4 +58,26 @@ func ConnectDatabase() {
 	}
 
 	log.Println("Migrasi tabel berhasil!")
+}
+
+func SeedUser() {
+	var count int64
+	DB.Model(&models.User{}).Count(&count)
+
+	// Jika tabel user masih kosong, buat satu local user
+	if count == 0 {
+		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password123"), bcrypt.DefaultCost)
+		user := models.User{
+			UserID:      "U-001",
+			FullName:    "Admin KKP",
+			Email:       "admin@kkp.com",
+			PhoneNumber: "081234567890",
+			Password:    string(hashedPassword),
+		}
+
+		if err := DB.Create(&user).Error; err != nil {
+			log.Fatal("Gagal membuat local user:", err)
+		}
+		log.Println("Seeder: Local user berhasil dibuat! (Email: admin@kkp.com | Pass: password123)")
+	}
 }
