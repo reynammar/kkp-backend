@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 
+	"kkp-backend/internal/models"
+
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -34,4 +36,24 @@ func ConnectDatabase() {
 
 	DB = database
 	log.Println("Database berhasil terkoneksi!")
+
+	log.Println("Memulai migrasi database secara bertahap...")
+
+	if err := DB.AutoMigrate(&models.User{}, &models.Bus{}, &models.Route{}); err != nil {
+		log.Fatal("Gagal melakukan migrasi tahap 1:", err)
+	}
+
+	if err := DB.AutoMigrate(&models.Seat{}, &models.Schedule{}); err != nil {
+		log.Fatal("Gagal melakukan migrasi tahap 2:", err)
+	}
+
+	if err := DB.AutoMigrate(&models.Booking{}); err != nil {
+		log.Fatal("Gagal melakukan migrasi tahap 3:", err)
+	}
+
+	if err := DB.AutoMigrate(&models.Payment{}, &models.Ticket{}); err != nil {
+		log.Fatal("Gagal melakukan migrasi tahap 4:", err)
+	}
+
+	log.Println("Migrasi tabel berhasil!")
 }
