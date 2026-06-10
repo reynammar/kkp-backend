@@ -36,8 +36,8 @@ type Route struct {
 type Schedule struct {
 	ScheduleID    string    `gorm:"primaryKey;type:varchar(20)" json:"schedule_id"`
 	DepartureDate time.Time `gorm:"type:date;not null" json:"departure_date"`
-	DepartureTime string    `gorm:"type:time;not null" json:"departure_time"`
-	ArrivalTime   string    `gorm:"type:time;not null" json:"arrival_time"`
+	DepartureTime string    `gorm:"type:time" json:"departure_time"`
+	ArrivalTime   string    `gorm:"type:time" json:"arrival_time"`
 	RouteID       string    `gorm:"type:varchar(20)" json:"route_id"`
 	BusID         string    `gorm:"type:varchar(20)" json:"bus_id"`
 	Route         Route     `gorm:"foreignKey:RouteID" json:"route,omitempty"`
@@ -55,6 +55,7 @@ type Booking struct {
 	Schedule      Schedule  `gorm:"foreignKey:ScheduleID" json:"schedule,omitempty"`
 	Payment       Payment   `gorm:"foreignKey:BookingID" json:"payment,omitempty"`
 	Ticket        Ticket    `gorm:"foreignKey:BookingID" json:"ticket,omitempty"`
+	SeatID        string    `gorm:"type:varchar(20)" json:"seat_id"`
 }
 
 type Payment struct {
